@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { ExperiencesModule } from './experiences/experiences.module';
@@ -15,20 +15,32 @@ import { SeedModule } from './seed/seed.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get('DATABASE_HOST', 'localhost'),
-        port: config.get<number>('DATABASE_PORT', 5432),
-        username: config.get('DATABASE_USER', 'postgres'),
-        password: config.get('DATABASE_PASSWORD', ''),
-        database: config.get('DATABASE_NAME', 'portfolio'),
-        ssl:
+      useFactory: (config: ConfigService): TypeOrmModuleOptions => {
+        const ssl =
           config.get('DATABASE_SSL', 'false') === 'true'
             ? { rejectUnauthorized: false }
-            : false,
-        autoLoadEntities: true,
-        synchronize: true,
-      }),
+            : false;
+
+        // Hosted providers (Render, Neon, Supabase) hand out a single connection
+        // string. Prefer it when present, else fall back to discrete vars for local dev.
+        const url = config.get<string>('DATABASE_URL');
+
+        return {
+          type: 'postgres',
+          ...(url
+            ? { url }
+            : {
+                host: config.get<string>('DATABASE_HOST', 'localhost'),
+                port: config.get<number>('DATABASE_PORT', 5432),
+                username: config.get<string>('DATABASE_USER', 'postgres'),
+                password: config.get<string>('DATABASE_PASSWORD', ''),
+                database: config.get<string>('DATABASE_NAME', 'portfolio'),
+              }),
+          ssl,
+          autoLoadEntities: true,
+          synchronize: true,
+        };
+      },
     }),
     AuthModule,
     ProfileModule,
