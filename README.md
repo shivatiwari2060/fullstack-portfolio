@@ -33,7 +33,7 @@ On first boot the backend auto-creates tables (`synchronize: true`) and seeds:
 ## Admin panel
 
 - URL: `http://localhost:3000/admin`
-- Default login: `admin@shivaprasad.dev` / `Admin@123` — **change both in `backend/.env` before deploying** (delete the user row or use a fresh DB for the new values to seed).
+
 
 From the admin panel you can edit your profile/socials, manage experience, projects, and skills, write and publish blog posts (Markdown), and read contact-form messages.
 
