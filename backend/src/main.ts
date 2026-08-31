@@ -7,10 +7,22 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+  // The production site and local dev always work; CORS_ORIGIN adds to this.
+  const defaultOrigins = [
+    'http://localhost:3000',
+    'https://shivaprasadtiwari.com.np',
+    'https://www.shivaprasadtiwari.com.np',
+  ];
+
+  const allowedOrigins = [
+    ...new Set([
+      ...defaultOrigins,
+      ...(process.env.CORS_ORIGIN ?? '')
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean),
+    ]),
+  ];
 
   // Vercel mints a new URL for production and for every branch/preview deploy,
   // so accept this project's *.vercel.app subdomains alongside the explicit list.
