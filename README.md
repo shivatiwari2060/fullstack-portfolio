@@ -62,6 +62,8 @@ Both apps live in one repo. Vercel and Render each build only their own subfolde
 
    For the database you can either paste the provider's connection string as `DATABASE_URL` (simplest — it takes precedence and the five discrete `DATABASE_*` vars are ignored), or set `DATABASE_HOST` / `DATABASE_PORT` / `DATABASE_USER` / `DATABASE_PASSWORD` / `DATABASE_NAME` individually. Leaving all of them unset makes the app fall back to `localhost`, which on Render fails with `ECONNREFUSED 127.0.0.1:5432`.
 
+   `CORS_ORIGIN` accepts a comma-separated list. Any `*.vercel.app` subdomain is also accepted automatically, so preview deploys work without reconfiguring the backend.
+
    Do **not** set `PORT` — Render injects it and the app already reads it. For production, consider switching `synchronize: false` + migrations once the schema is stable.
 
 3. **Frontend → Vercel** — Import the repo:
